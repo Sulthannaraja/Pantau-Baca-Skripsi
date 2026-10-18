@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buat Kuis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">Buat Kuis</div>
+      <div class="nav-links">
+        <a href="dashboard-guru.html">Dashboard</a>
+        <a href="katalog.html">Katalog</a>
+        <a href="#" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container section">
+    <article class="card">
+      <h2>Buat Kuis untuk Buku</h2>
+      <p>Pilih buku, buat pertanyaan, lalu simpan kuis untuk siswa yang sudah selesai membaca.</p>
+    </article>
+
+    <article class="card">
+      <form id="createQuizForm">
+        <div class="toolbar" style="flex-direction:column; align-items:flex-start; gap:14px;">
+          <label>
+            <strong>Pilih Buku</strong><br />
+            <select id="bookSelect" class="input"></select>
+          </label>
+          <label>
+            <strong>Judul Kuis</strong><br />
+            <input id="quizTitleInput" class="input" placeholder="Contoh: Uji Pemahaman Bab 1" />
+          </label>
+          <label>
+            <strong>Deskripsi</strong><br />
+            <textarea id="quizDescriptionInput" class="input" rows="4" placeholder="Deskripsi singkat kuis..."></textarea>
+          </label>
+        </div>
+
+        <div style="margin-top:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+            <h3>Pertanyaan</h3>
+            <button type="button" id="addQuestion" class="btn btn-outline">Tambah Pertanyaan</button>
+          </div>
+          <div id="questionPanel" style="margin-top:12px;"></div>
+        </div>
+
+        <div style="margin-top:18px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+          <button type="submit" class="btn btn-primary">Simpan Kuis</button>
+          <p id="formMessage" class="text-muted"></p>
+        </div>
+      </form>
+    </article>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/create-quiz.js"></script>
+</body>
+</html>

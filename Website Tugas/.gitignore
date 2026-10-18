@@ -1,0 +1,5 @@
+backend/target/
+backend/.idea/
+backend/uploads/books/*
+*.log
+.DS_Store

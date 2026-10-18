@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">Dashboard Admin</div>
+      <div class="nav-links">
+        <a href="katalog.html">Katalog</a>
+        <a href="#" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container section layout">
+    <aside class="sidebar">
+      <h3>Upload Buku PDF</h3>
+      <input id="title" class="input" placeholder="Judul" />
+      <input id="author" class="input" placeholder="Penulis" style="margin-top:8px;" />
+      <select id="category" style="margin-top:8px;width:100%;">
+        <option value="Novel">Novel</option>
+        <option value="Cerpen">Cerpen</option>
+        <option value="Buku Pembelajaran">Buku Pembelajaran</option>
+      </select>
+      <input id="cover" class="input" placeholder="URL Cover" style="margin-top:8px;" />
+      <input id="file" type="file" accept="application/pdf" style="margin-top:8px;" />
+      <button id="uploadBtn" class="btn btn-primary" style="margin-top:10px;">Upload</button>
+    </aside>
+
+    <section class="mainpanel">
+      <div class="toolbar" style="margin-bottom:22px; justify-content:space-between; align-items:center; gap:12px;">
+        <div>
+          <h3 style="margin:0 0 8px;">Tinjau Dashboard</h3>
+          <p style="margin:0; color:#516886; max-width:700px;">Admin dapat membuka tampilan dashboard siswa dan guru untuk memeriksa antarmuka dan alur tampilan pengguna.</p>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn btn-outline" href="dashboard-siswa.html">Lihat Dashboard Siswa</a>
+          <a class="btn btn-primary" href="dashboard-guru.html">Lihat Dashboard Guru</a>
+        </div>
+      </div>
+
+      <h3>Manajemen Buku</h3>
+      <table>
+        <thead><tr><th>Judul</th><th>Penulis</th><th>Kategori</th><th>Aksi</th></tr></thead>
+        <tbody id="adminBookBody"></tbody>
+      </table>
+
+      <h3 style="margin-top:18px;">Manajemen User</h3>
+      <table>
+        <thead><tr><th>Nama</th><th>Email</th><th>Role</th><th>Aksi</th></tr></thead>
+        <tbody id="adminUserBody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/dashboard-admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('quiz_questions', function (Blueprint $table) {
+            $table->unsignedSmallInteger('order')->default(0)->after('points');
+            $table->text('explanation')->nullable()->after('order');
+        });
+
+        Schema::table('quiz_submissions', function (Blueprint $table) {
+            $table->unsignedInteger('duration_seconds')->default(0)->after('score');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('quiz_questions', function (Blueprint $table) {
+            $table->dropColumn(['order', 'explanation']);
+        });
+
+        Schema::table('quiz_submissions', function (Blueprint $table) {
+            $table->dropColumn('duration_seconds');
+        });
+    }
+};

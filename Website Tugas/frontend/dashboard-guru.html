@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Guru</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">Dashboard Guru</div>
+      <div class="nav-links">
+        <a href="katalog.html">Katalog</a>
+        <a href="create-quiz.html">Buat Kuis</a>
+        <a href="#" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container section">
+    <div class="stat-grid">
+      <div class="stat"><h4>Siswa Aktif</h4><p id="activeStudents">0</p></div>
+      <div class="stat"><h4>Total Buku Dibaca</h4><p id="bookReads">0</p></div>
+      <div class="stat"><h4>Rata-rata Durasi</h4><p id="avgDuration">0 menit</p></div>
+    </div>
+
+    <div class="toolbar" style="margin-top:24px; justify-content:space-between; align-items:center; gap:18px;">
+      <div>
+        <h2 style="margin:0 0 8px;">Aksi Cepat</h2>
+        <p style="margin:0; max-width:680px; color:#516886;">Buat kuis baru untuk siswa yang sudah menyelesaikan buku. Dengan fitur ini, guru bisa langsung membuat soal setelah siswa selesai membaca.</p>
+      </div>
+      <a class="btn btn-primary" href="create-quiz.html">Buat Kuis Baru</a>
+    </div>
+
+    <div class="mainpanel" style="margin-top:20px;">
+      <canvas id="activityChart" height="90"></canvas>
+    </div>
+
+    <h2 style="margin-top:24px;">Data Siswa</h2>
+    <table>
+      <thead><tr><th>Nama</th><th>Buku</th><th>Durasi</th><th>Progress</th><th>Status</th></tr></thead>
+      <tbody id="teacherTableBody"></tbody>
+    </table>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/dashboard-guru.js"></script>
+</body>
+</html>

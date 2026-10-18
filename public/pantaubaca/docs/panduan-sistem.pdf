@@ -1,0 +1,451 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 3006 >>
+stream
+BT
+/F1 9 Tf
+50 790 Td
+12 TL
+(LAPORAN IDENTIFIKASI DAN ANALISIS CRUD APLIKASI PANTAUBACA) Tj
+T*
+(Tanggal: 8 Mei 2026) Tj
+T*
+(Proyek: Laravel Fundamental / PantauBaca) Tj
+T*
+() Tj
+T*
+(1. Ringkasan Aplikasi) Tj
+T*
+(PantauBaca adalah aplikasi literasi digital sekolah. Sistem menyediakan autentikasi pengguna,) Tj
+T*
+(katalog buku PDF, reader, pencatatan progres membaca, dashboard admin, dashboard guru, dashboard) Tj
+T*
+(siswa, dan kuis pemahaman bacaan.) Tj
+T*
+() Tj
+T*
+(2. Hasil Identifikasi CRUD) Tj
+T*
+(A. Modul Buku) Tj
+T*
+(- Create: POST /api/books/upload, digunakan admin untuk upload buku PDF beserta metadata judul,) Tj
+T*
+(penulis, kategori, cover.) Tj
+T*
+(- Read: GET /api/books dan GET /api/books/{book}, digunakan katalog, dashboard, dan reader.) Tj
+T*
+(- Update: sebelumnya belum tersedia. Sudah ditambahkan PATCH /api/books/{book} untuk mengubah) Tj
+T*
+(metadata buku dan mendukung penggantian file PDF di backend.) Tj
+T*
+(- Delete: DELETE /api/books/{book}, digunakan admin untuk menghapus buku dan file PDF.) Tj
+T*
+(- Status akhir: CRUD lengkap.) Tj
+T*
+() Tj
+T*
+(B. Modul User) Tj
+T*
+(- Create: POST /api/register, digunakan pengguna role GURU atau SISWA untuk registrasi.) Tj
+T*
+(- Read: GET /api/users, digunakan admin untuk melihat daftar user.) Tj
+T*
+(- Update: sebelumnya belum tersedia. Sudah ditambahkan PATCH /api/users/{user} untuk mengubah) Tj
+T*
+(nama, email, password opsional, dan role.) Tj
+T*
+(- Delete: DELETE /api/users/{user}, digunakan admin untuk menghapus user, dengan proteksi agar) Tj
+T*
+(admin aktif tidak menghapus akunnya sendiri.) Tj
+T*
+(- Status akhir: CRUD lengkap.) Tj
+T*
+() Tj
+T*
+(C. Modul Reading Log) Tj
+T*
+(- Create: POST /api/reading/start membuat sesi membaca siswa jika belum ada.) Tj
+T*
+(- Read: GET /api/reading/report menampilkan laporan membaca untuk siswa/guru/admin.) Tj
+T*
+(- Update: POST /api/reading/progress memperbarui durasi, progres, dan halaman terakhir.) Tj
+T*
+(- Delete: tidak tersedia secara eksplisit karena data reading log berfungsi sebagai histori/rekam) Tj
+T*
+(jejak. Penghapusan terjadi cascade saat user atau buku dihapus.) Tj
+T*
+(- Status akhir: CRUD parsial yang sesuai kebutuhan audit histori.) Tj
+T*
+() Tj
+T*
+(D. Modul Kuis) Tj
+T*
+(- Create: POST /api/quizzes, digunakan guru/admin untuk membuat kuis dan pertanyaan.) Tj
+T*
+(- Read: GET /api/books/{book}/quiz untuk siswa setelah membaca 100%. Sudah ditambahkan GET) Tj
+T*
+(/api/quizzes untuk daftar manajemen kuis guru/admin.) Tj
+T*
+(- Update: sebelumnya belum tersedia. Sudah ditambahkan PATCH /api/quizzes/{quiz} untuk mengubah) Tj
+T*
+(judul, deskripsi, status aktif, buku, dan daftar pertanyaan.) Tj
+T*
+(- Delete: sebelumnya belum tersedia. Sudah ditambahkan DELETE /api/quizzes/{quiz}.) Tj
+T*
+(- Status akhir: CRUD lengkap untuk sisi manajemen kuis, ditambah submit jawaban siswa melalui POST) Tj
+T*
+(/api/quizzes/submit.) Tj
+T*
+() Tj
+T*
+(3. Analisis Alur Sistem Menggunakan Flowchart) Tj
+T*
+(Flowchart utama autentikasi dan dashboard:) Tj
+T*
+([Mulai]) Tj
+T*
+(|) Tj
+T*
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 1727 >>
+stream
+BT
+/F1 9 Tf
+50 790 Td
+12 TL
+([User membuka halaman login/register]) Tj
+T*
+(|) Tj
+T*
+([POST /api/login atau POST /api/register]) Tj
+T*
+(|) Tj
+T*
+(<Validasi Form Request berhasil?> -- Tidak --> [Kirim error validasi ke frontend]) Tj
+T*
+(| Ya) Tj
+T*
+([Token dan role disimpan di localStorage]) Tj
+T*
+(|) Tj
+T*
+(<Role user?>) Tj
+T*
+(|-- ADMIN --> [Dashboard Admin: kelola buku dan user]) Tj
+T*
+(|-- GURU --> [Dashboard Guru: pantau reading report dan kelola kuis]) Tj
+T*
+(|-- SISWA --> [Dashboard Siswa: baca buku, progres, kerjakan kuis]) Tj
+T*
+(|) Tj
+T*
+([Selesai]) Tj
+T*
+() Tj
+T*
+(Flowchart CRUD buku oleh admin:) Tj
+T*
+([Admin login]) Tj
+T*
+(|) Tj
+T*
+([Dashboard Admin memanggil GET /api/books]) Tj
+T*
+(|) Tj
+T*
+(<Aksi admin?>) Tj
+T*
+(|-- Upload --> [Isi form + PDF] --> [POST /api/books/upload] --> [BookController@upload] -->) Tj
+T*
+([Simpan file + insert books]) Tj
+T*
+(|-- Edit --> [Ubah metadata] --> [PATCH /api/books/{book}] --> [BookController@update] --> [Update) Tj
+T*
+(tabel books]) Tj
+T*
+(|-- Hapus --> [Konfirmasi] --> [DELETE /api/books/{book}] --> [BookController@destroy] --> [Hapus) Tj
+T*
+(file + delete row]) Tj
+T*
+(|) Tj
+T*
+([Refresh daftar buku]) Tj
+T*
+() Tj
+T*
+(Flowchart aktivitas siswa:) Tj
+T*
+([Siswa login]) Tj
+T*
+(|) Tj
+T*
+([Buka katalog GET /api/books]) Tj
+T*
+(|) Tj
+T*
+([Pilih buku dan buka reader]) Tj
+T*
+(|) Tj
+T*
+([POST /api/reading/start]) Tj
+T*
+(|) Tj
+T*
+([Membaca PDF stream GET /api/books/{book}/stream]) Tj
+T*
+(|) Tj
+T*
+([POST /api/reading/progress]) Tj
+T*
+(|) Tj
+T*
+(<Progress 100%?> -- Tidak --> [Lanjut membaca]) Tj
+T*
+(| Ya) Tj
+T*
+([GET /api/books/{book}/quiz]) Tj
+T*
+(|) Tj
+T*
+([POST /api/quizzes/submit]) Tj
+T*
+(|) Tj
+T*
+([Skor disimpan ke quiz_submissions dan quiz_answers]) Tj
+T*
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 2531 >>
+stream
+BT
+/F1 9 Tf
+50 790 Td
+12 TL
+() Tj
+T*
+(Flowchart kuis oleh guru/admin:) Tj
+T*
+([Guru/Admin login]) Tj
+T*
+(|) Tj
+T*
+([GET /api/books untuk pilihan buku]) Tj
+T*
+(|) Tj
+T*
+([Susun judul, deskripsi, pertanyaan, opsi, jawaban]) Tj
+T*
+(|) Tj
+T*
+([POST /api/quizzes]) Tj
+T*
+(|) Tj
+T*
+([QuizController@store menyimpan quizzes dan quiz_questions]) Tj
+T*
+(|) Tj
+T*
+([GET /api/quizzes untuk daftar manajemen]) Tj
+T*
+(|) Tj
+T*
+(<Perlu perubahan?> -- Ya --> [PATCH /api/quizzes/{quiz}]) Tj
+T*
+(|) Tj
+T*
+(<Perlu hapus?> -- Ya --> [DELETE /api/quizzes/{quiz}]) Tj
+T*
+() Tj
+T*
+(4. Penjelasan Komponen Sistem) Tj
+T*
+(A. Routing) Tj
+T*
+(- routes/web.php berisi Route::view untuk halaman Blade: index, login, register, katalog, reader,) Tj
+T*
+(dashboard siswa, dashboard guru, dashboard admin.) Tj
+T*
+(- routes/api.php berisi endpoint REST/API untuk auth, buku, user, reading log, dan kuis.) Tj
+T*
+(- Route sensitif diamankan middleware api.token sehingga request wajib membawa Authorization:) Tj
+T*
+(Bearer token.) Tj
+T*
+() Tj
+T*
+(B. Controller) Tj
+T*
+(- AuthController menangani register dan login. Login membuat api_token baru dan mengirim token,) Tj
+T*
+(role, userId, dan name ke frontend.) Tj
+T*
+(- BookController menangani daftar buku, detail buku, upload, update, hapus, meta halaman, preview,) Tj
+T*
+(dan stream PDF.) Tj
+T*
+(- UserController menangani daftar user, update user, dan hapus user khusus admin.) Tj
+T*
+(- ReadingController menangani mulai membaca, update progres, dan laporan membaca.) Tj
+T*
+(- QuizController menangani daftar kuis, buat kuis, update kuis, hapus kuis, tampil kuis per buku,) Tj
+T*
+(dan submit jawaban.) Tj
+T*
+() Tj
+T*
+(C. Model) Tj
+T*
+(- User merepresentasikan tabel users, role, password hashed cast, api_token tersembunyi, dan) Tj
+T*
+(relasi readingLogs.) Tj
+T*
+(- Book merepresentasikan tabel books dan berelasi hasMany ke ReadingLog dan Quiz.) Tj
+T*
+(- ReadingLog merekam user_id, book_id, duration, progress, last_page, started_at, serta relasi) Tj
+T*
+(user dan book.) Tj
+T*
+(- Quiz merepresentasikan kuis per buku, dibuat oleh user guru/admin, memiliki active cast boolean,) Tj
+T*
+(relasi book, teacher, questions, submissions.) Tj
+T*
+(- QuizQuestion menyimpan pertanyaan, tipe MCQ/ESSAY, opsi JSON, jawaban, poin.) Tj
+T*
+(- QuizSubmission menyimpan hasil submit siswa dan skor.) Tj
+T*
+(- QuizAnswer menyimpan jawaban per pertanyaan dan penilaian otomatis untuk MCQ.) Tj
+T*
+() Tj
+T*
+(D. View dan Frontend) Tj
+T*
+(- resources/views/pantaubaca/*.blade.php adalah halaman utama yang dilayani Laravel.) Tj
+T*
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 2214 >>
+stream
+BT
+/F1 9 Tf
+50 790 Td
+12 TL
+(- public/pantaubaca/js/app.js menyediakan helper API: apiGet, apiPost, apiPatch, apiDelete,) Tj
+T*
+(authHeaders, localStorage auth, dan escapeHtml.) Tj
+T*
+(- dashboard-admin.js mengelola upload buku, edit buku, hapus buku, edit user, dan hapus user.) Tj
+T*
+(- dashboard-guru.js menampilkan laporan membaca dan form pembuatan kuis.) Tj
+T*
+(- dashboard-siswa.js menampilkan histori membaca, kuis yang tersedia, form pengerjaan kuis, dan) Tj
+T*
+(submit jawaban.) Tj
+T*
+(- katalog.js dan reader.js mendukung pencarian buku, pembukaan PDF, dan update progres baca.) Tj
+T*
+() Tj
+T*
+(5. Perbaikan yang Dilakukan) Tj
+T*
+(- Menambahkan UpdateBookRequest, UpdateUserRequest, dan UpdateQuizRequest sebagai validasi khusus) Tj
+T*
+(update.) Tj
+T*
+(- Menambahkan endpoint PATCH /api/books/{book}.) Tj
+T*
+(- Menambahkan endpoint PATCH /api/users/{user}.) Tj
+T*
+(- Menambahkan endpoint GET /api/quizzes, PATCH /api/quizzes/{quiz}, dan DELETE) Tj
+T*
+(/api/quizzes/{quiz}.) Tj
+T*
+(- Menambahkan cast boolean active pada model Quiz.) Tj
+T*
+(- Menambahkan helper apiPatch pada frontend.) Tj
+T*
+(- Menambahkan tombol edit buku dan edit user di dashboard admin.) Tj
+T*
+(- Menyalin perubahan JS ke folder frontend statis Website Tugas/frontend/js agar konsisten dengan) Tj
+T*
+(versi public Laravel.) Tj
+T*
+() Tj
+T*
+(6. Verifikasi) Tj
+T*
+(- Pint formatter: vendor/bin/pint --dirty --format agent, hasil passed.) Tj
+T*
+(- Test CRUD baru: php artisan test --compact tests/Feature/CrudCompletionTest.php, hasil 2 passed,) Tj
+T*
+(18 assertions.) Tj
+T*
+(- Test fitur terkait: php artisan test --compact tests/Feature/Api/PantauBacaApiTest.php) Tj
+T*
+(tests/Feature/QuizTest.php, hasil 6 passed, 29 assertions.) Tj
+T*
+(- Route API dicek dengan php artisan route:list --path=api --except-vendor dan menampilkan) Tj
+T*
+(endpoint CRUD yang lengkap.) Tj
+T*
+() Tj
+T*
+(7. Kesimpulan) Tj
+T*
+(Setelah identifikasi, modul Buku, User, dan Kuis awalnya belum memiliki CRUD lengkap. Perbaikan) Tj
+T*
+(sudah dilakukan pada backend dan sebagian frontend admin. Modul Reading Log tetap dipertahankan) Tj
+T*
+(sebagai CRUD parsial karena sifatnya histori aktivitas, bukan data master yang biasanya dihapus) Tj
+T*
+(manual.) Tj
+T*
+ET
+endstream
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000134 00000 n 
+0000000202 00000 n 
+0000000328 00000 n 
+0000003385 00000 n 
+0000003511 00000 n 
+0000005289 00000 n 
+0000005415 00000 n 
+0000007997 00000 n 
+0000008125 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+10391
+%%EOF

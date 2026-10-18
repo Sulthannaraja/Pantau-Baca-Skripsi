@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuis Buku</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">Kuis Buku</div>
+      <div class="nav-links">
+        <a href="katalog.html">Katalog</a>
+        <a href="#" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container section">
+    <article class="card">
+      <h2 id="quizTitle">Memuat kuis...</h2>
+      <p id="quizDescription" class="text-muted"></p>
+    </article>
+
+    <article class="card" id="quizCard">
+      <div id="quizMessage" class="text-muted">Memuat pertanyaan kuis...</div>
+      <form id="quizForm">
+        <div id="questionList"></div>
+        <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+          <button type="submit" id="submitQuiz" class="btn btn-primary">Kirim Jawaban</button>
+          <div id="quizResult" class="text-muted"></div>
+        </div>
+      </form>
+    </article>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/quiz.js"></script>
+</body>
+</html>
