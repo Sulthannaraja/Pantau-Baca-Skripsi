@@ -1282,6 +1282,7 @@ table tbody tr:last-child td {
   }
   .dashboard-main {
     margin-left: 0;
+    max-width: 100%;
   }
   .dashboard-header {
     padding: 0 20px;
@@ -2015,6 +2016,7 @@ html, body {
   .dashboard-main {
     margin-left: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
     min-width: 0 !important;
   }
 }
@@ -2063,8 +2065,16 @@ html, body {
   .dashboard-header-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
+  }
+
+  .dashboard-header-actions > a {
+    display: none !important;
+  }
+
+  .dashboard-header-actions > .btn-outline {
+    display: none !important;
   }
 
   .dashboard-header-actions a {
