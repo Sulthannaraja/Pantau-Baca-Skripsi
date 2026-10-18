@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('books', function (Blueprint $table) {
-            //
+            if (! Schema::hasColumn('books', 'literacy_level')) {
+                $table->string('literacy_level', 20)->default('RENDAH')->after('category');
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('books', function (Blueprint $table) {
-            //
+            if (Schema::hasColumn('books', 'literacy_level')) {
+                $table->dropColumn('literacy_level');
+            }
         });
     }
 };

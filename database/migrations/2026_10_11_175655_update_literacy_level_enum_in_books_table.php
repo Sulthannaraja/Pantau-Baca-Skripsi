@@ -12,15 +12,17 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (! Schema::hasColumn('books', 'literacy_level')) {
+            Schema::table('books', function (Blueprint $table) {
+                $table->enum('literacy_level', ['RENDAH', 'TINGGI', 'DASAR', 'LANJUTAN'])->default('RENDAH');
+            });
+
+            return;
+        }
+
         $driver = Schema::getConnection()->getDriverName();
 
         if ($driver === 'sqlite') {
-            if (! Schema::hasColumn('books', 'literacy_level')) {
-                Schema::table('books', function (Blueprint $table) {
-                    $table->string('literacy_level', 20)->default('RENDAH');
-                });
-            }
-
             return;
         }
 
