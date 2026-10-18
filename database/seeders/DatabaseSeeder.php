@@ -56,6 +56,7 @@ class DatabaseSeeder extends Seeder
         );
 
         $this->call([
+            InitialContentSeeder::class,
             BookResumeSeeder::class,
             LiteracySurveySeeder::class,
         ]);

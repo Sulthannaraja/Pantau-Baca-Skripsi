@@ -21,7 +21,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:150', 'unique:users,name'],
             'email' => ['required', 'email', 'max:150', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => ['required', 'string', 'min:6'],
             'role' => ['required', Rule::in(['GURU', 'SISWA'])],
         ];
     }
