@@ -11,7 +11,9 @@ use App\Models\QuizSubmission;
 use App\Models\ReadingLog;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DemoTeacherSeeder extends Seeder
 {
@@ -27,47 +29,86 @@ class DemoTeacherSeeder extends Seeder
             ]
         );
 
-        // 2. Buat Kelas yang Dikelola Guru
-        $classA = Classroom::query()->updateOrCreate(
-            ['code' => 'PB-IPA1'],
-            [
-                'name' => 'Kelas XI IPA 1',
-                'teacher_id' => $teacher->id,
-            ]
-        );
+        // Hapus kelas lama milik guru ini agar bersih (hanya ada XI 1 s/d XI 7)
+        $oldClassrooms = Classroom::query()->where('teacher_id', $teacher->id)->get();
+        foreach ($oldClassrooms as $oldClass) {
+            $oldClass->users()->detach();
+            $oldClass->delete();
+        }
 
-        $classB = Classroom::query()->updateOrCreate(
-            ['code' => 'PB-IPS2'],
-            [
-                'name' => 'Kelas XI IPS 2',
+        // 2. Buat 7 Kelas: Kelas XI 1 sampai Kelas XI 7
+        $classrooms = [];
+        for ($i = 1; $i <= 7; $i++) {
+            $classrooms[$i] = Classroom::query()->create([
+                'name' => "Kelas XI {$i}",
+                'code' => "PB-XI{$i}",
                 'teacher_id' => $teacher->id,
-            ]
-        );
+            ]);
+        }
 
-        // 3. Daftar Siswa SMAN 3 Bandar Lampung yang Realistis
-        $studentsData = [
-            ['name' => 'Aditya Pratama', 'email' => 'aditya.sman3@pantaubaca.com', 'class' => 'A', 'score' => 36, 'level' => 'TINGGI'],
-            ['name' => 'Dinda Rahmawati', 'email' => 'dinda.sman3@pantaubaca.com', 'class' => 'A', 'score' => 34, 'level' => 'TINGGI'],
-            ['name' => 'Fajar Nugraha', 'email' => 'fajar.sman3@pantaubaca.com', 'class' => 'A', 'score' => 22, 'level' => 'RENDAH'],
-            ['name' => 'Siti Nurhaliza', 'email' => 'siti.sman3@pantaubaca.com', 'class' => 'A', 'score' => 24, 'level' => 'RENDAH'],
-            ['name' => 'Ahmad Fauzi', 'email' => 'ahmad.fauzi@pantaubaca.com', 'class' => 'A', 'score' => 38, 'level' => 'TINGGI'],
-            ['name' => 'Bagas Wicaksono', 'email' => 'bagas.sman3@pantaubaca.com', 'class' => 'A', 'score' => 25, 'level' => 'RENDAH'],
-            ['name' => 'Nabila Putri', 'email' => 'nabila.sman3@pantaubaca.com', 'class' => 'A', 'score' => 35, 'level' => 'TINGGI'],
-            ['name' => 'Rizky Ramadhan', 'email' => 'rizky.ramadhan@pantaubaca.com', 'class' => 'A', 'score' => 23, 'level' => 'RENDAH'],
-            ['name' => 'Putri Ayu Wandira', 'email' => 'putri.ayu@pantaubaca.com', 'class' => 'B', 'score' => 33, 'level' => 'TINGGI'],
-            ['name' => 'Muhammad Farhan', 'email' => 'm.farhan@pantaubaca.com', 'class' => 'B', 'score' => 26, 'level' => 'RENDAH'],
-            ['name' => 'Zahra Amalia', 'email' => 'zahra.amalia@pantaubaca.com', 'class' => 'B', 'score' => 37, 'level' => 'TINGGI'],
-            ['name' => 'Dimas Prasetyo', 'email' => 'dimas.prasetyo@pantaubaca.com', 'class' => 'B', 'score' => 21, 'level' => 'RENDAH'],
-            ['name' => 'Anisa Safitri', 'email' => 'anisa.safitri@pantaubaca.com', 'class' => 'B', 'score' => 32, 'level' => 'TINGGI'],
-            ['name' => 'Rafi Alamsyah', 'email' => 'rafi.alamsyah@pantaubaca.com', 'class' => 'B', 'score' => 24, 'level' => 'RENDAH'],
-            ['name' => 'Tiara Maharani', 'email' => 'tiara.maharani@pantaubaca.com', 'class' => 'B', 'score' => 36, 'level' => 'TINGGI'],
+        // 3. Daftar 35 Siswa Asli Sampel SMAN 3 Bandar Lampung
+        $studentsList = [
+            // Kelas XI 1 (5 Siswa)
+            ['name' => 'Abdoel Hakim', 'class_num' => 1, 'level' => 'RENDAH', 'score' => 22],
+            ['name' => 'Alisia Fitri Andini', 'class_num' => 1, 'level' => 'RENDAH', 'score' => 24],
+            ['name' => 'Allya Nawang Sari', 'class_num' => 1, 'level' => 'TINGGI', 'score' => 36],
+            ['name' => 'Alwin Alvaro AD.', 'class_num' => 1, 'level' => 'RENDAH', 'score' => 20],
+            ['name' => 'Andrey Arshavin', 'class_num' => 1, 'level' => 'TINGGI', 'score' => 34],
+
+            // Kelas XI 2 (5 Siswa)
+            ['name' => 'Apipah', 'class_num' => 2, 'level' => 'RENDAH', 'score' => 23],
+            ['name' => 'Azka Nur Cantika', 'class_num' => 2, 'level' => 'TINGGI', 'score' => 35],
+            ['name' => 'David Wardani', 'class_num' => 2, 'level' => 'RENDAH', 'score' => 21],
+            ['name' => 'Devina Salsabila', 'class_num' => 2, 'level' => 'TINGGI', 'score' => 37],
+            ['name' => 'Fathir AlKamil N.', 'class_num' => 2, 'level' => 'RENDAH', 'score' => 25],
+
+            // Kelas XI 3 (5 Siswa)
+            ['name' => 'Faza Fauzan Azima', 'class_num' => 3, 'level' => 'TINGGI', 'score' => 38],
+            ['name' => 'Fikrian Ikbar Zulfa', 'class_num' => 3, 'level' => 'RENDAH', 'score' => 22],
+            ['name' => 'Fitrah Fata N.', 'class_num' => 3, 'level' => 'RENDAH', 'score' => 24],
+            ['name' => 'Ibnu Abi Reyhan', 'class_num' => 3, 'level' => 'TINGGI', 'score' => 36],
+            ['name' => 'Jovan Rafiq Hawwari', 'class_num' => 3, 'level' => 'RENDAH', 'score' => 20],
+
+            // Kelas XI 4 (5 Siswa)
+            ['name' => "Karin Amirah 'A", 'class_num' => 4, 'level' => 'TINGGI', 'score' => 35],
+            ['name' => 'Lionel Messi Ardana', 'class_num' => 4, 'level' => 'RENDAH', 'score' => 23],
+            ['name' => 'M. Fahry Kurniawan C.', 'class_num' => 4, 'level' => 'TINGGI', 'score' => 34],
+            ['name' => 'M. Rafli', 'class_num' => 4, 'level' => 'RENDAH', 'score' => 22],
+            ['name' => 'M. Ramadhan Banuwa', 'class_num' => 4, 'level' => 'RENDAH', 'score' => 25],
+
+            // Kelas XI 5 (5 Siswa)
+            ['name' => 'M. Trisna Pratama', 'class_num' => 5, 'level' => 'TINGGI', 'score' => 33],
+            ['name' => 'Maritza Audrey Dewi', 'class_num' => 5, 'level' => 'TINGGI', 'score' => 38],
+            ['name' => 'Meifia Labuna F.', 'class_num' => 5, 'level' => 'RENDAH', 'score' => 24],
+            ['name' => 'Moch Syahriel R.', 'class_num' => 5, 'level' => 'RENDAH', 'score' => 21],
+            ['name' => 'Mutiara Abelia Aswin', 'class_num' => 5, 'level' => 'TINGGI', 'score' => 36],
+
+            // Kelas XI 6 (5 Siswa)
+            ['name' => 'Nabilla Aurelia Putri', 'class_num' => 6, 'level' => 'TINGGI', 'score' => 37],
+            ['name' => 'Nauren Vania R.', 'class_num' => 6, 'level' => 'RENDAH', 'score' => 23],
+            ['name' => 'Naysya Jihan P.', 'class_num' => 6, 'level' => 'TINGGI', 'score' => 35],
+            ['name' => 'Nizar Pratama', 'class_num' => 6, 'level' => 'RENDAH', 'score' => 22],
+            ['name' => 'Nurjihan Fajarina', 'class_num' => 6, 'level' => 'TINGGI', 'score' => 36],
+
+            // Kelas XI 7 (5 Siswa)
+            ['name' => 'Rahma Razuqi', 'class_num' => 7, 'level' => 'TINGGI', 'score' => 34],
+            ['name' => 'Raka Ilham R.', 'class_num' => 7, 'level' => 'RENDAH', 'score' => 25],
+            ['name' => 'Ricky Kurniawan', 'class_num' => 7, 'level' => 'RENDAH', 'score' => 21],
+            ['name' => 'Ririn Padila', 'class_num' => 7, 'level' => 'TINGGI', 'score' => 33],
+            ['name' => 'Rosela', 'class_num' => 7, 'level' => 'RENDAH', 'score' => 26],
         ];
 
         $studentModels = [];
 
-        foreach ($studentsData as $st) {
+        foreach ($studentsList as $index => $st) {
+            $slug = Str::slug($st['name'], '.');
+            if (empty($slug)) {
+                $slug = 'siswa.' . ($index + 1);
+            }
+            $email = "{$slug}@pantaubaca.com";
+
             $user = User::query()->updateOrCreate(
-                ['email' => $st['email']],
+                ['email' => $email],
                 [
                     'name' => $st['name'],
                     'password' => Hash::make('siswa123'),
@@ -75,13 +116,13 @@ class DemoTeacherSeeder extends Seeder
                 ]
             );
 
-            $studentModels[$st['email']] = $user;
+            $studentModels[] = $user;
 
-            // Gabungkan siswa ke kelas
-            $targetClass = $st['class'] === 'A' ? $classA : $classB;
-            $targetClass->users()->syncWithoutDetaching([$user->id]);
+            // Masukkan siswa ke kelasnya (5 siswa per kelas)
+            $class = $classrooms[$st['class_num']];
+            $class->users()->syncWithoutDetaching([$user->id]);
 
-            // Buat hasil survei diagnostik awal (10 butir)
+            // Buat hasil evaluasi survei diagnostik awal (10 butir)
             LiteracySurvey::query()->updateOrCreate(
                 ['user_id' => $user->id],
                 [
@@ -92,7 +133,7 @@ class DemoTeacherSeeder extends Seeder
             );
         }
 
-        // Ambil beberapa buku untuk log & resume
+        // Ambil buku yang ada di database
         $books = Book::all();
         if ($books->isEmpty()) {
             return;
@@ -104,186 +145,182 @@ class DemoTeacherSeeder extends Seeder
         $bookSekolah = $books->firstWhere('title', 'Cerita dari Halaman Sekolah 2019 BBY') ?? $books[3] ?? $books[0];
         $bookLangit = $books->firstWhere('title', 'Menggapai Langit, Anyologi Cerpen') ?? $books[4] ?? $books[0];
 
-        // 4. Buat Rekam Jejak Aktivitas Membaca (Reading Logs)
-        $readingSamples = [
-            [$studentModels['aditya.sman3@pantaubaca.com']->id, $bookDigital->id, 35, 100, 24],
-            [$studentModels['dinda.sman3@pantaubaca.com']->id, $bookLangit->id, 28, 100, 18],
-            [$studentModels['fajar.sman3@pantaubaca.com']->id, $bookMaung->id, 15, 100, 12],
-            [$studentModels['siti.sman3@pantaubaca.com']->id, $bookRemaja->id, 20, 100, 15],
-            [$studentModels['ahmad.fauzi@pantaubaca.com']->id, $bookSekolah->id, 42, 100, 30],
-            [$studentModels['bagas.sman3@pantaubaca.com']->id, $bookRemaja->id, 18, 92, 14],
-            [$studentModels['nabila.sman3@pantaubaca.com']->id, $bookDigital->id, 30, 100, 24],
-            [$studentModels['rizky.ramadhan@pantaubaca.com']->id, $bookMaung->id, 12, 65, 8],
-            [$studentModels['putri.ayu@pantaubaca.com']->id, $bookLangit->id, 25, 85, 15],
-            [$studentModels['zahra.amalia@pantaubaca.com']->id, $bookDigital->id, 40, 100, 24],
-            [$studentModels['m.farhan@pantaubaca.com']->id, $bookSekolah->id, 16, 55, 10],
-            [$studentModels['dimas.prasetyo@pantaubaca.com']->id, $bookMaung->id, 10, 45, 5],
-        ];
+        // 4. Rekam Aktivitas Membaca Siswa (Reading Logs)
+        $selectedBooks = [$bookDigital, $bookRemaja, $bookMaung, $bookSekolah, $bookLangit];
+        foreach ($studentModels as $idx => $student) {
+            $book = $selectedBooks[$idx % count($selectedBooks)];
+            $dur = 12 + (($idx * 3) % 35);
+            $prog = ($idx % 3 === 0) ? 100 : (($idx % 2 === 0) ? 85 : 65);
+            $lastP = max(1, (int) round(($prog / 100) * 24));
 
-        foreach ($readingSamples as [$uid, $bid, $dur, $prog, $lp]) {
             ReadingLog::query()->updateOrCreate(
-                ['user_id' => $uid, 'book_id' => $bid],
+                ['user_id' => $student->id, 'book_id' => $book->id],
                 [
                     'duration' => $dur,
                     'progress' => $prog,
-                    'last_page' => $lp,
+                    'last_page' => $lastP,
                     'started_at' => now()->subDays(rand(1, 4)),
-                    'updated_at' => now()->subHours(rand(1, 24)),
+                    'updated_at' => now()->subHours(rand(1, 18)),
                 ]
             );
         }
 
-        // 5. Buat Data Isian Resume Siswa (Book Resumes)
-        // A. RESUME MENUNGGU NILAI (⏳ Guru dapat mencoba tombol "Beri Nilai")
-        BookResume::query()->updateOrCreate(
-            ['book_id' => $bookDigital->id, 'user_id' => $studentModels['aditya.sman3@pantaubaca.com']->id, 'category' => 'LANJUTAN'],
+        // 5. Data Isian Resume Siswa (Book Resumes)
+        // Bersihkan resume sebelumnya untuk demo yang rapi
+        BookResume::query()->truncate();
+
+        // A. 5 RESUME MENUNGGU NILAI (⏳ Siap dinilai langsung oleh guru demo)
+        $pendingResumes = [
             [
-                'tujuan_penyajian' => 'Menganalisis dampak literasi digital dalam memfilter hoaks di media sosial.',
-                'kedalaman_materi' => 'Buku ini menguraikan tahapan verifikasi sumber berita, perlindungan data pribadi, dan etika berinteraksi daring.',
-                'bahasa' => 'Bahasa baku dan akademis dengan istilah teknologi yang relevan.',
-                'penyajian_materi' => 'Sistematis, dimulai dari fakta permasalahan hoaks hingga solusi pencegahan terstruktur.',
-                'contoh' => 'Studi kasus penyebaran berita palsu saat pemilu dan tips memeriksa keaslian foto digital.',
-                'content' => "Buku 'Literasi Digital' karya Daniel Pandapotan memberikan wawasan mendalam mengenai tantangan komunikasi di era internet. Penulis menekankan bahwa kemampuan membaca saja tidak cukup, melainkan harus disertai daya kritis dalam menyaring validitas informasi.\n\n"
-                    ."Analisis Utama:\n"
-                    ."1. Era keterbukaan informasi menuntut pembaca memiliki kemampuan membedakan opini dan fakta empiris.\n"
-                    ."2. Keamanan jejak digital dan etika komunikasi merupakan pilar penting bagi generasi muda.\n\n"
-                    ."Refleksi Mandiri:\n"
-                    ."Saya menyadari pentingnya melakukan verifikasi silang (cross-check) terhadap berita sebelum membagikannya kepada orang lain.",
+                'student' => $studentModels[0], // Abdoel Hakim (Kelas XI 1)
+                'book' => $bookSekolah,
+                'category' => 'DASAR',
+                'tujuan' => 'Menemukan pesan moral tentang arti persahabatan sejati di masa sekolah.',
+                'kedalaman' => 'Menceritakan kebersamaan anak-anak sekolah saat mempersiapkan ujian dan saling membantu.',
+                'bahasa' => 'Bahasa lugas, santun, dan mudah dicerna.',
+                'penyajian' => 'Alur maju runtut mulai dari hari pertama sekolah hingga perpisahan.',
+                'contoh' => 'Saat tokoh utama meminjamkan catatan pelajaran kepada sahabatnya yang sakit.',
+                'content' => "Buku 'Cerita dari Halaman Sekolah' mengisahkan indahnya masa remaja dan pentingnya sikap saling peduli antar sesama kawan. Pelajaran berharga yang saya dapatkan adalah kebersamaan dan tolong-menolong dapat meringankan beban terberat sekalipun.",
+            ],
+            [
+                'student' => $studentModels[2], // Allya Nawang Sari (Kelas XI 1)
+                'book' => $bookDigital,
+                'category' => 'LANJUTAN',
+                'tujuan' => 'Menganalisis urgensi verifikasi kebenaran informasi sebelum menyebarkannya.',
+                'kedalaman' => 'Membedah kriteria sumber berita yang valid dan bahaya berita palsu di ruang publik.',
+                'bahasa' => 'Bahasa formal dengan istilah literasi digital terstandar.',
+                'penyajian' => 'Pola berpikir deduktif, berawal dari fenomena misinformasi hingga langkah verifikasi.',
+                'contoh' => 'Metode pengecekan fakta (fact-checking) lewat situs resmi pemeriksa fakta.',
+                'content' => "Penulis 'Literasi Digital' Daniel Pandapotan menegaskan bahwa literasi di era siber menuntut kecakapan kognitif tingkat tinggi. Membaca kritis merupakan benteng utama dalam mencegah polarisasi informasi di kalangan pelajar.",
+            ],
+            [
+                'student' => $studentModels[6], // Azka Nur Cantika (Kelas XI 2)
+                'book' => $bookLangit,
+                'category' => 'LANJUTAN',
+                'tujuan' => 'Menelaah nilai kegigihan dalam meraih pendidikan tinggi.',
+                'kedalaman' => 'Menguraikan perjuangan pemuda desa menghadapi keterbatasan fasilitas sekolah.',
+                'bahasa' => 'Sastrawi, sarat perumpamaan dan pesan tersirat.',
+                'penyajian' => 'Antologi cerpen dengan puncak klimaks dramatik.',
+                'contoh' => 'Kisah seorang anak petani yang rela menyeberang sungai demi mengikuti bimbingan belajar.',
+                'content' => "Buku ini membuktikan bahwa keterbatasan bukan alasan untuk menyerah. Tekad belajar yang kuat selalu menemukan jalan keluar menuju masa depan yang lebih baik.",
+            ],
+            [
+                'student' => $studentModels[8], // Devina Salsabila (Kelas XI 2)
+                'book' => $bookRemaja,
+                'category' => 'DASAR',
+                'tujuan' => 'Memahami tips membentuk kebiasaan membaca harian yang efektif.',
+                'kedalaman' => 'Menjelaskan teknik membaca skimming dan scanning serta pembuatan resume ringkas.',
+                'bahasa' => 'Komunikatif dan memotivasi remaja.',
+                'penyajian' => 'Disusun dalam bentuk bab-bab tanya jawab praktis.',
+                'contoh' => 'Target membaca 10 lembar sebelum tidur setiap malam.',
+                'content' => "Remaja dan Literasi karya Zakiyah memberikan panduan praktis agar kita tidak malas membaca buku tebal. Kuncinya adalah konsistensi sedikit demi sedikit setiap harinya.",
+            ],
+            [
+                'student' => $studentModels[10], // Faza Fauzan Azima (Kelas XI 3)
+                'book' => $bookMaung,
+                'category' => 'DASAR',
+                'tujuan' => 'Mengetahui pentingnya menjaga keseimbangan ekosistem hutan dan satwa liar.',
+                'kedalaman' => 'Menceritakan kepunahan satwa langka akibat perburuan ilegal dan deforestasi.',
+                'bahasa' => 'Bahasa petualangan fiksi yang penuh imajinasi.',
+                'penyajian' => 'Alur campuran dengan kilas balik sejarah hutan lindung.',
+                'contoh' => 'Tokoh pemburu yang bertobat setelah diselamatkan oleh harimau dari tanah longsor.',
+                'content' => "Cerita Maung dan Hujan Terakhir sangat menggugah hati. Menjaga kelestarian lingkungan bukan sekadar tugas polisi hutan, melainkan tanggung jawab kita semua.",
+            ],
+        ];
+
+        foreach ($pendingResumes as $pr) {
+            BookResume::query()->create([
+                'book_id' => $pr['book']->id,
+                'user_id' => $pr['student']->id,
+                'category' => $pr['category'],
+                'tujuan_penyajian' => $pr['tujuan'],
+                'kedalaman_materi' => $pr['kedalaman'],
+                'bahasa' => $pr['bahasa'],
+                'penyajian_materi' => $pr['penyajian'],
+                'contoh' => $pr['contoh'],
+                'content' => $pr['content'],
                 'score' => null,
                 'teacher_feedback' => null,
                 'graded_by' => null,
                 'graded_at' => null,
-            ]
-        );
+            ]);
+        }
 
-        BookResume::query()->updateOrCreate(
-            ['book_id' => $bookRemaja->id, 'user_id' => $studentModels['siti.sman3@pantaubaca.com']->id, 'category' => 'DASAR'],
+        // B. 3 RESUME TELAH DINILAI (⭐ Contoh hasil penilaian guru dan catatan rubrik)
+        $gradedResumes = [
             [
-                'tujuan_penyajian' => 'Mengetahui manfaat membaca buku bagi perkembangan pola pikir remaja.',
-                'kedalaman_materi' => 'Materi menjelaskan pentingnya menyisihkan waktu membaca 15 menit setiap hari.',
-                'bahasa' => 'Kalimatnya sederhana, akrab, dan mudah dipahami.',
-                'penyajian_materi' => 'Menggunakan contoh percakapan sehari-hari remaja di sekolah.',
-                'contoh' => 'Tips memilih buku sesuai hobi dan cara membuat jadwal membaca santai.',
-                'content' => "Buku 'Remaja dan Literasi' sangat menyenangkan dibaca. Buku ini menceritakan bagaimana membaca bisa membuka masa depan yang cerah dan membantu kita lebih percaya diri saat berbicara di depan kelas.\n\n"
-                    ."Poin Penting yang Saya Pelajari:\n"
-                    ."- Membaca 15 menit setiap hari menambah banyak kosakata baru.\n"
-                    ."- Membiasakan diri merangkum membantu mengingat pelajaran lebih lama.\n\n"
-                    ."Kesimpulan:\n"
-                    ."Saya bertekad untuk membaca minimal satu buku cerita setiap minggu di perpustakaan sekolah.",
-                'score' => null,
-                'teacher_feedback' => null,
-                'graded_by' => null,
-                'graded_at' => null,
-            ]
-        );
-
-        BookResume::query()->updateOrCreate(
-            ['book_id' => $bookMaung->id, 'user_id' => $studentModels['fajar.sman3@pantaubaca.com']->id, 'category' => 'DASAR'],
-            [
-                'tujuan_penyajian' => 'Memahami nilai pelestarian satwa langka dan kearifan hutan lokal.',
-                'kedalaman_materi' => 'Kisah petualangan seorang pemuda desa yang bersahabat dengan penjaga hutan lindung.',
-                'bahasa' => 'Bahasa naratif sastra yang penuh ungkapan keindahan alam.',
-                'penyajian_materi' => 'Alur maju dengan konflik perburuan liar yang menegangkan.',
-                'contoh' => 'Konflik saat warga desa bergotong royong menyelamatkan anak harimau yang terluka.',
-                'content' => "Buku 'Maung dan Hujan Terakhir' menceritakan kepedulian terhadap kelestarian alam. Cerita ini mengajarkan bahwa merusak hutan akan membawa bencana bagi manusia sendiri.\n\n"
-                    ."Pelajaran Berharga:\n"
-                    ."1. Kita harus hidup selaras dengan alam dan tidak merusak habitat satwa langka.\n"
-                    ."2. Keberanian membela kebenaran harus dimulai dari lingkungan terdekat kita.",
-                'score' => null,
-                'teacher_feedback' => null,
-                'graded_by' => null,
-                'graded_at' => null,
-            ]
-        );
-
-        BookResume::query()->updateOrCreate(
-            ['book_id' => $bookLangit->id, 'user_id' => $studentModels['dinda.sman3@pantaubaca.com']->id, 'category' => 'LANJUTAN'],
-            [
-                'tujuan_penyajian' => 'Menelaah kritik sosial dan eksplorasi psikologis karakter pemuda desa.',
-                'kedalaman_materi' => 'Menyoroti dinamika ketimpangan akses pendidikan dan tekad pantang menyerah anak pelosok.',
-                'bahasa' => 'Gaya bahasa kaya metafora dan diksi sastrawi yang indah.',
-                'penyajian_materi' => 'Disusun dalam bentuk antologi cerpen tematik bergradasi.',
-                'contoh' => 'Tokoh Danu yang gigih belajar di bawah lampu minyak demi lulus ujian beasiswa.',
-                'content' => "Antologi cerpen 'Menggapai Langit' karya Drs. Widada menyuguhkan cermin kehidupan nyata. Setiap cerpen memperlihatkan bahwa keterbatasan fisik maupun ekonomi bukanlah penghalang bagi tekad yang kuat.\n\n"
-                    ."Nilai Filosofis:\n"
-                    ."Pendidikan adalah jembatan pembebasan dari kebodohan dan kepasrahan nasib.",
-                'score' => null,
-                'teacher_feedback' => null,
-                'graded_by' => null,
-                'graded_at' => null,
-            ]
-        );
-
-        // B. RESUME TELAH DINILAI (⭐ Menampilkan contoh hasil penilaian & catatan guru)
-        BookResume::query()->updateOrCreate(
-            ['book_id' => $bookSekolah->id, 'user_id' => $studentModels['ahmad.fauzi@pantaubaca.com']->id, 'category' => 'DASAR'],
-            [
-                'tujuan_penyajian' => 'Menceritakan kembali nilai persahabatan dan kejujuran di sekolah.',
-                'kedalaman_materi' => 'Menceritakan interaksi siswa dengan guru saat persiapan ujian sekolah.',
-                'bahasa' => 'Bahasa percakapan santun dan runtut.',
-                'penyajian_materi' => 'Alur kronologis yang hangat.',
-                'contoh' => 'Saat tokoh mengakui kesalahannya menjatuhkan vas bunga kelas.',
-                'content' => "Cerita dari Halaman Sekolah menggambarkan suka duka kehidupan siswa. Kejujuran adalah hal paling utama yang dijunjung dalam setiap bab cerita ini.",
-                'score' => 92,
-                'teacher_feedback' => 'Rangkuman sangat rapi, pesan moral diulas dengan kalimat mandiri yang sangat baik. Pertahankan prestasimu, Fauzi!',
-                'graded_by' => $teacher->id,
+                'student' => $studentModels[15], // Karin Amirah (Kelas XI 4)
+                'book' => $bookDigital,
+                'category' => 'LANJUTAN',
+                'tujuan' => 'Mengevaluasi dampak etika digital bagi masa depan generasi muda.',
+                'kedalaman' => 'Menyajikan analisis komparatif antara pemanfaatan teknologi positif dan negatif.',
+                'bahasa' => 'Bahasa argumentatif ilmiah yang sistematis.',
+                'penyajian' => 'Paparan fakta, analisis kritis, dan solusi nyata.',
+                'contoh' => 'Pemanfaatan media sosial untuk kampanye sosial pelestarian budaya.',
+                'content' => "Di era serba digital, kecerdasan memilih konten sama pentingnya dengan kecerdasan akademis di sekolah.",
+                'score' => 95,
+                'feedback' => 'Analisis yang luar biasa tajam dan pemilihan contoh kasusnya sangat tepat. Pertahankan daya kritis ini, Karin!',
                 'graded_at' => now()->subDay(),
-            ]
-        );
-
-        BookResume::query()->updateOrCreate(
-            ['book_id' => $bookDigital->id, 'user_id' => $studentModels['nabila.sman3@pantaubaca.com']->id, 'category' => 'LANJUTAN'],
+            ],
             [
-                'tujuan_penyajian' => 'Mengevaluasi kesiapan generasi muda menghadapi era kecerdasan buatan.',
-                'kedalaman_materi' => 'Menganalisis dampak algoritma media sosial terhadap fokus membaca anak.',
-                'bahasa' => 'Lugas, kritis, dan persuasif.',
-                'penyajian_materi' => 'Pola deduktif dengan data penguat.',
-                'contoh' => 'Eksperimen pengurangan durasi layar pada kelompok pelajar SMA.',
-                'content' => "Literasi digital di era kecerdasan buatan menuntut kita menjadi subjek aktif, bukan konsumen pasif algoritma. Kita perlu melatih daya baca mendalam (deep reading).",
-                'score' => 88,
-                'teacher_feedback' => 'Analisis kritis yang luar biasa! Gaya bahasa sangat baik dan argumentatif. Sangat membanggakan.',
-                'graded_by' => $teacher->id,
+                'student' => $studentModels[21], // Maritza Audrey (Kelas XI 5)
+                'book' => $bookSekolah,
+                'category' => 'DASAR',
+                'tujuan' => 'Menghargai perjuangan dan jasa para guru di sekolah.',
+                'kedalaman' => 'Kisah interaksi antara murid yang nakal dengan guru bimbingan konseling yang sabar.',
+                'bahasa' => 'Bahasa naratif santun dan mengharukan.',
+                'penyajian' => 'Kronologis berbasis pengalaman pribadi tokoh.',
+                'contoh' => 'Saat guru membimbing siswa yang hampir putus sekolah sampai berhasil lulus.',
+                'content' => "Buku ini mengingatkan kita untuk selalu menghormati guru yang telah mendidik kita dengan tulus tanpa lelah.",
+                'score' => 90,
+                'feedback' => 'Rangkuman disusun dengan bahasa yang sangat menyentuh dan runtut. Struktur penyajiannya sangat baik.',
                 'graded_at' => now()->subDays(2),
-            ]
-        );
-
-        BookResume::query()->updateOrCreate(
-            ['book_id' => $bookRemaja->id, 'user_id' => $studentModels['bagas.sman3@pantaubaca.com']->id, 'category' => 'DASAR'],
+            ],
             [
-                'tujuan_penyajian' => 'Menemukan cara asyik memulai hobi membaca buku.',
-                'kedalaman_materi' => 'Membahas trik mengatasi rasa kantuk dan bosan saat membaca buku non-fiksi.',
-                'bahasa' => 'Bahasa komunikatif dan santai.',
-                'penyajian_materi' => 'Poin-poin tips praktis.',
-                'contoh' => 'Membuat target membaca 5 halaman per hari bersama teman sebangku.',
-                'content' => "Buku ini sangat bermanfaat bagi siswa yang malas membaca. Kuncinya adalah memulai dari bahan bacaan bergambar dan disukai terlebih dahulu.",
-                'score' => 85,
-                'teacher_feedback' => 'Ulasan yang sangat jujur dan aplikatif. Terus tingkatkan jumlah bacaanmu setiap bulan ya!',
-                'graded_by' => $teacher->id,
+                'student' => $studentModels[25], // Nabilla Aurelia (Kelas XI 6)
+                'book' => $bookLangit,
+                'category' => 'LANJUTAN',
+                'tujuan' => 'Menemukan makna filosofis dari ketabahan menghadapi cobaan hidup.',
+                'kedalaman' => 'Eksplorasi emosi dan dialog mendalam tentang keadilan sosial.',
+                'bahasa' => 'Bahasa sastra tingkat tinggi dengan pilihan kata puitis.',
+                'penyajian' => 'Tema-tema berurutan dari penderitaan menuju harapan.',
+                'contoh' => 'Tokoh yang memilih tetap jujur meskipun dalam kesulitan ekonomi yang berat.',
+                'content' => "Keberhasilan sejati bukan diukur dari materi, melainkan dari seberapa kokoh kita memegang prinsip kejujuran.",
+                'score' => 88,
+                'feedback' => 'Penyampaian intisari cerita sangat filosofis dan berbobot. Perhatikan konsistensi tanda petik dialog.',
                 'graded_at' => now()->subDays(3),
-            ]
-        );
+            ],
+        ];
 
-        // 6. Buat Nilai Kuis Pemahaman Siswa
+        foreach ($gradedResumes as $gr) {
+            BookResume::query()->create([
+                'book_id' => $gr['book']->id,
+                'user_id' => $gr['student']->id,
+                'category' => $gr['category'],
+                'tujuan_penyajian' => $gr['tujuan'],
+                'kedalaman_materi' => $gr['kedalaman'],
+                'bahasa' => $gr['bahasa'],
+                'penyajian_materi' => $gr['penyajian'],
+                'contoh' => $gr['contoh'],
+                'content' => $gr['content'],
+                'score' => $gr['score'],
+                'teacher_feedback' => $gr['feedback'],
+                'graded_by' => $teacher->id,
+                'graded_at' => $gr['graded_at'],
+            ]);
+        }
+
+        // 6. Nilai Kuis Pemahaman Siswa
         $quizzes = Quiz::all();
         if ($quizzes->isNotEmpty()) {
             $quiz = $quizzes->first();
-            $quizStudents = [
-                [$studentModels['aditya.sman3@pantaubaca.com']->id, 100, 180],
-                [$studentModels['dinda.sman3@pantaubaca.com']->id, 90, 210],
-                [$studentModels['ahmad.fauzi@pantaubaca.com']->id, 100, 150],
-                [$studentModels['nabila.sman3@pantaubaca.com']->id, 90, 240],
-                [$studentModels['siti.sman3@pantaubaca.com']->id, 80, 260],
-                [$studentModels['fajar.sman3@pantaubaca.com']->id, 80, 290],
-                [$studentModels['bagas.sman3@pantaubaca.com']->id, 85, 230],
-                [$studentModels['zahra.amalia@pantaubaca.com']->id, 95, 175],
-            ];
-
-            foreach ($quizStudents as [$uid, $scr, $durSec]) {
+            foreach (array_slice($studentModels, 0, 15) as $i => $st) {
+                $scr = 75 + (($i * 5) % 30);
                 QuizSubmission::query()->updateOrCreate(
-                    ['quiz_id' => $quiz->id, 'user_id' => $uid],
+                    ['quiz_id' => $quiz->id, 'user_id' => $st->id],
                     [
-                        'score' => $scr,
-                        'duration_seconds' => $durSec,
+                        'score' => min(100, $scr),
+                        'duration_seconds' => 150 + ($i * 12),
                         'submitted_at' => now()->subDays(rand(1, 3)),
                     ]
                 );
